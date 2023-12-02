@@ -21,4 +21,13 @@ class DataCleaning:
         users_df['country_code'] = users_df['country_code'].replace('GGB', 'GB')
 
         return users_df
+    
+
+    def clean_card_data(card_data_df):
+        card_data_df = card_data_df.replace('NULL', np.nan)
+        card_data_df.expiry_date = pd.to_datetime(card_data_df.expiry_date, format='mixed', errors='coerce')
+        card_data_df.date_payment_confirmed = pd.to_datetime(card_data_df.date_payment_confirmed, format='mixed', errors='coerce')
+        card_data_df = card_data_df.dropna()
+        return card_data_df
+
 

@@ -1,3 +1,6 @@
 db_creds.yaml
 local_sql_database.yaml
 __pycache__
+card_data.csv
+data
+clean_card_data.py
