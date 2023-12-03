@@ -1,6 +1,6 @@
 # Multinational Retail Data Centralisation
 
-A project to collate sales data of a 
+A project to collate the sales data of a multinational retail company from multiple data sources and combine them into one database for simpler analysis. Data is extracted using methods from the data_extraction.py file and then cleaned using methods from the data_cleaning.py file. The database_utils.py file contains methods used to connect to a postgres databse, supporting both a local connection and a connection to an AWS RDS database. The configuaration for these connections must be contained in a yaml file, the setup of which is detailed below. The main.py file will extract data from all the various data sources, clean it and finally upload the data to a local postgres database by default. This can be changed by changing what yaml file is being read.
 
 ## Installation
 
@@ -25,3 +25,11 @@ pip install -r requirements.txt
 Run the project by running the following command in your terminal or command prompt:
 
 python main.py
+
+## YAML File Configuration
+
+RDS_HOST: {hostname of database}
+RDS_PASSWORD: {password for database}
+RDS_USER: {username of user trying to access database}
+RDS_DATABASE: {name of database to connect to}
+RDS_PORT: {port of database}
