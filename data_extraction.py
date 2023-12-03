@@ -8,6 +8,7 @@ STORES_ENDPOINT = "https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/n
 RETRIEVAL_ENDPOINT = "https://aqj7u5id95.execute-api.eu-west-1.amazonaws.com/prod/store_details"
 HEADERS = {"x-api-key": "yFBQbwXe9J3sd6zWVAMrK6lcxxr0q1lr2PT6DDMX"}
 PRODUCT_DATA_ADDRESS = "s3://data-handling-public/products.csv"
+DATE_DETAILS_ADDRESS = "s3://data-handling-public/date_details.json"
 
 class DataExtractor:
     def read_rds_table(table_name, engine):
@@ -35,10 +36,10 @@ class DataExtractor:
         return pd.DataFrame(store_data_frames)
     
 
-    def extract_from_s3(data_address):
+    def extract_from_s3(data_address, local_filename):
         split_address = data_address.split("/")
         bucket_name = split_address[2]
-        file_name = split_address[3]
+        filename = split_address[3]
 
         s3_client = boto3.client("s3")
-        s3_client.download_file(bucket_name, file_name, "products_data.csv")
+        s3_client.download_file(bucket_name, filename, local_filename)

@@ -76,8 +76,8 @@ class DataCleaning:
             return weight
         
 
-    def clean_products_data():
-        products_df = pd.read_csv("products_data.csv")
+    def clean_products_data(filename):
+        products_df = pd.read_csv(filename)
         products_df = products_df.rename(columns={"Unnamed: 0": "index"})
         products_df.date_added = pd.to_datetime(products_df.date_added, format="mixed", errors="coerce")
         products_df = products_df[~products_df['date_added'].isnull()]
@@ -89,5 +89,21 @@ class DataCleaning:
     def clean_orders_data(orders_df):
         orders_df = orders_df.drop(columns=["level_0", "1", "first_name", "last_name"])
         return orders_df
+    
+    
+    def clean_date_details_data(filename):
+        date_details_df = pd.read_json(filename)
+
+        date_details_df = date_details_df.drop_duplicates()
+
+        date_details_df["date"] = pd.to_datetime(date_details_df[["year", "month", "day"]], errors="coerce").astype(str)
+        date_details_df["datetime"] = date_details_df["date"] + " " + date_details_df["timestamp"]
+        date_details_df["datetime"] = pd.to_datetime(date_details_df["datetime"], format="mixed", errors="coerce")
+
+        date_details_df = date_details_df.drop(columns=["timestamp", "month", "year", "day", "date"])
+
+        date_details_df = date_details_df.dropna()
+
+        return date_details_df
 
 
