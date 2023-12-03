@@ -39,3 +39,48 @@ class DataCleaning:
         return store_df
 
 
+    def convert_product_weights(weight):
+        if "kg" in weight:
+            weight = weight.replace("kg", "")
+            weight = np.format_float_positional(float(weight), precision=3)
+            return weight
+        
+        if "x" in weight:
+            weight_multiplication_numbers = weight.split(" x ")
+            base_weight = weight_multiplication_numbers[1]
+            multiplier = int(weight_multiplication_numbers[0])
+
+            base_weight = base_weight.replace("g", "")
+            base_weight = float(base_weight)
+            total_weight = weight = np.format_float_positional((multiplier * base_weight), precision=3)
+
+            return total_weight
+        
+        if "g" in weight:
+
+            if "." in weight:
+                if len(weight.split(".")[0]) == 1:
+                    weight = weight.replace("g", "")
+                    weight = np.format_float_positional(float(weight), precision=3)
+                    return weight
+        
+            weight = weight.replace(weight[weight.index("g"):], "")
+            weight = np.format_float_positional((float(weight)/1000), precision=3)
+            return weight
+        
+        if "ml" in weight:
+            weight = weight.replace("ml", "")
+            weight = np.format_float_positional((float(weight)/1000), precision=3)
+            return weight
+        
+
+    def clean_products_data():
+        products_df = pd.read_csv("products_data.csv")
+        products_df = products_df.rename(columns={"Unnamed: 0": "index"})
+        products_df.date_added = pd.to_datetime(products_df.date_added, format="mixed", errors="coerce")
+        products_df = products_df[~products_df['date_added'].isnull()]
+        products_df["weight"] = products_df["weight"].apply(DataCleaning.convert_product_weights)
+        products_df["product_price"] = products_df["product_price"].replace("£", "", regex=True)
+        return products_df
+
+
