@@ -29,7 +29,11 @@ python main.py
 ## YAML File Configuration
 
 RDS_HOST: {hostname of database}
+
 RDS_PASSWORD: {password for database}
+
 RDS_USER: {username of user trying to access database}
+
 RDS_DATABASE: {name of database to connect to}
+
 RDS_PORT: {port of database}
