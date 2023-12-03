@@ -3,6 +3,7 @@ import numpy as np
 
 
 class DataCleaning:
+
     def clean_user_data(users_df):
      
         users_df.date_of_birth = pd.to_datetime(users_df.date_of_birth, format="mixed", errors="coerce")
@@ -22,7 +23,6 @@ class DataCleaning:
 
         return users_df
     
-
     def clean_card_data(card_data_df):
         card_data_df = card_data_df.replace("NULL", np.nan)
         card_data_df.expiry_date = pd.to_datetime(card_data_df.expiry_date, format="mixed", errors="coerce")
@@ -39,7 +39,6 @@ class DataCleaning:
         store_df["address"] = store_df["address"].replace("\n", ", ", regex=True)
         store_df[["latitude", "longitude"]] = store_df[["latitude", "longitude"]].astype(float)
         return store_df
-
 
     def convert_product_weights(weight):
         if "kg" in weight:
@@ -75,7 +74,6 @@ class DataCleaning:
             weight = np.format_float_positional((float(weight)/1000), precision=3)
             return weight
         
-
     def clean_products_data(filename):
         products_df = pd.read_csv(filename)
         products_df = products_df.rename(columns={"Unnamed: 0": "index"})
@@ -85,11 +83,9 @@ class DataCleaning:
         products_df["product_price"] = products_df["product_price"].replace("£", "", regex=True)
         return products_df
     
-
     def clean_orders_data(orders_df):
         orders_df = orders_df.drop(columns=["level_0", "1", "first_name", "last_name"])
         return orders_df
-    
     
     def clean_date_details_data(filename):
         date_details_df = pd.read_json(filename)
