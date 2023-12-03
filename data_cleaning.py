@@ -28,6 +28,7 @@ class DataCleaning:
         card_data_df.expiry_date = pd.to_datetime(card_data_df.expiry_date, format="mixed", errors="coerce")
         card_data_df.date_payment_confirmed = pd.to_datetime(card_data_df.date_payment_confirmed, format="mixed", errors="coerce")
         card_data_df = card_data_df.dropna()
+        card_data_df["card_number"] = card_data_df["card_number"].astype(int)
         return card_data_df
     
     def clean_store_data(store_df):
@@ -36,6 +37,7 @@ class DataCleaning:
         store_df.opening_date = pd.to_datetime(store_df.opening_date, format="mixed", errors="coerce")
         store_df = store_df[~store_df['opening_date'].isnull()]
         store_df["address"] = store_df["address"].replace("\n", ", ", regex=True)
+        store_df[["latitude", "longitude"]] = store_df[["latitude", "longitude"]].astype(float)
         return store_df
 
 
@@ -82,5 +84,10 @@ class DataCleaning:
         products_df["weight"] = products_df["weight"].apply(DataCleaning.convert_product_weights)
         products_df["product_price"] = products_df["product_price"].replace("£", "", regex=True)
         return products_df
+    
+
+    def clean_orders_data(orders_df):
+        orders_df = orders_df.drop(columns=["level_0", "1", "first_name", "last_name"])
+        return orders_df
 
 
