@@ -25,9 +25,11 @@ class DataCleaning:
     
     def clean_card_data(card_data_df):
         card_data_df = card_data_df.replace("NULL", np.nan)
-        card_data_df.expiry_date = pd.to_datetime(card_data_df.expiry_date, format="mixed", errors="coerce")
+        card_data_df.expiry_date = pd.to_datetime(card_data_df.expiry_date, format="%m/%y", errors="coerce")
         card_data_df.date_payment_confirmed = pd.to_datetime(card_data_df.date_payment_confirmed, format="mixed", errors="coerce")
         card_data_df = card_data_df.dropna()
+        card_data_df["card_number"] = card_data_df["card_number"].astype(str)
+        card_data_df["card_number"] = card_data_df["card_number"].apply(lambda num: "".join([i for i in num if i.isdigit()]))
         card_data_df["card_number"] = card_data_df["card_number"].astype(int)
         return card_data_df
     
@@ -38,6 +40,7 @@ class DataCleaning:
         store_df = store_df[~store_df['opening_date'].isnull()]
         store_df["address"] = store_df["address"].replace("\n", ", ", regex=True)
         store_df[["latitude", "longitude"]] = store_df[["latitude", "longitude"]].astype(float)
+        store_df["staff_numbers"] = store_df["staff_numbers"].apply(lambda num: "".join([i for i in num if i.isdigit()]))
         return store_df
 
     def convert_product_weights(weight):
@@ -74,6 +77,11 @@ class DataCleaning:
             weight = np.format_float_positional((float(weight)/1000), precision=3)
             return weight
         
+        if "oz" in weight:
+            weight = weight.replace("oz", "")
+            weight = np.format_float_positional((float(weight)/35.274), precision=3)
+            return weight
+        
     def clean_products_data(filename):
         products_df = pd.read_csv(filename)
         products_df = products_df.rename(columns={"Unnamed: 0": "index"})
@@ -81,6 +89,7 @@ class DataCleaning:
         products_df = products_df[~products_df['date_added'].isnull()]
         products_df["weight"] = products_df["weight"].apply(DataCleaning.convert_product_weights)
         products_df["product_price"] = products_df["product_price"].replace("£", "", regex=True)
+        products_df = products_df.dropna()
         return products_df
     
     def clean_orders_data(orders_df):
@@ -93,8 +102,8 @@ class DataCleaning:
         date_details_df = date_details_df.drop_duplicates()
 
         date_details_df["date"] = pd.to_datetime(date_details_df[["year", "month", "day"]], errors="coerce").astype(str)
-        date_details_df["datetime"] = date_details_df["date"] + " " + date_details_df["timestamp"]
-        date_details_df["datetime"] = pd.to_datetime(date_details_df["datetime"], format="mixed", errors="coerce")
+        date_details_df["datetimes"] = date_details_df["date"] + " " + date_details_df["timestamp"]
+        date_details_df["datetimes"] = pd.to_datetime(date_details_df["datetimes"], format="mixed", errors="coerce")
 
         date_details_df = date_details_df.drop(columns=["timestamp", "month", "year", "day", "date"])
 
