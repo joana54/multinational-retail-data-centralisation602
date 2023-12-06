@@ -1,11 +1,12 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
+
 
 
 class DataCleaning:
 
     def clean_user_data(users_df):
-     
+        """This function takes in a DataFrame containing the user data and cleans it. The cleaned DataFrame is then returned."""
         users_df.date_of_birth = pd.to_datetime(users_df.date_of_birth, format="mixed", errors="coerce")
         users_df.join_date = pd.to_datetime(users_df.join_date, format="mixed", errors="coerce")
         str_columns = ["first_name", "last_name", "company",
@@ -14,7 +15,6 @@ class DataCleaning:
         
         users_df[str_columns] = users_df[str_columns].astype("string")
     
-
         users_df = users_df.replace("NULL", np.nan)
         users_df = users_df.dropna()
         users_df.reset_index(drop=True, inplace=True)
@@ -24,6 +24,7 @@ class DataCleaning:
         return users_df
     
     def clean_card_data(card_data_df):
+        """This function takes in a DataFrame containing card data and cleans it. The cleaned DataFrame is then returned."""
         card_data_df = card_data_df.replace("NULL", np.nan)
         card_data_df.expiry_date = pd.to_datetime(card_data_df.expiry_date, format="%m/%y", errors="coerce")
         card_data_df.date_payment_confirmed = pd.to_datetime(card_data_df.date_payment_confirmed, format="mixed", errors="coerce")
@@ -34,6 +35,7 @@ class DataCleaning:
         return card_data_df
     
     def clean_store_data(store_df):
+        """This function takes in a DataFrame containg store data and cleans it. The cleaned DataFrame is then returned."""
         store_df = pd.read_csv("data/stores_data.csv")
         store_df = store_df.drop("lat", axis=1)
         store_df.opening_date = pd.to_datetime(store_df.opening_date, format="mixed", errors="coerce")
@@ -41,9 +43,11 @@ class DataCleaning:
         store_df["address"] = store_df["address"].replace("\n", ", ", regex=True)
         store_df[["latitude", "longitude"]] = store_df[["latitude", "longitude"]].astype(float)
         store_df["staff_numbers"] = store_df["staff_numbers"].apply(lambda num: "".join([i for i in num if i.isdigit()]))
+        store_df["continent"] = store_df["continent"].replace("eeEurope", "Europe")
         return store_df
 
     def convert_product_weights(weight):
+        """This function calculates total weight, converts all various units of weight to kg, and makes the value a float."""
         if "kg" in weight:
             weight = weight.replace("kg", "")
             weight = np.format_float_positional(float(weight), precision=3)
@@ -83,6 +87,8 @@ class DataCleaning:
             return weight
         
     def clean_products_data(filename):
+        """This function takes in a cvs file containing products data, loads it onto a DataFrame and cleans it. The cleaned 
+        DataFrame is then returned."""
         products_df = pd.read_csv(filename)
         products_df = products_df.rename(columns={"Unnamed: 0": "index"})
         products_df.date_added = pd.to_datetime(products_df.date_added, format="mixed", errors="coerce")
@@ -93,10 +99,13 @@ class DataCleaning:
         return products_df
     
     def clean_orders_data(orders_df):
+        """This function takes in a DataFrame containing the orders data and cleans it. The cleaned DataFrame is then returned."""
         orders_df = orders_df.drop(columns=["level_0", "1", "first_name", "last_name"])
         return orders_df
     
     def clean_date_details_data(filename):
+        """This function takes in a json file containing date details data, loads into onto a DataFrame and cleans it. The 
+        cleaned DataFrame is then returned."""
         date_details_df = pd.read_json(filename)
 
         date_details_df = date_details_df.drop_duplicates()
